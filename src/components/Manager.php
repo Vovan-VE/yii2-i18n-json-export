@@ -18,9 +18,7 @@ class Manager extends Component
     public $sourceDrivers = [];
 
     /** @var array|DriverInterface Config for exporting driver */
-    public $exportDriver = [
-        'class' => FlatCategoryDriver::class,
-    ];
+    public $exportDriver = [];
 
     /**
      * @var DriverInterface[]
@@ -99,9 +97,14 @@ class Manager extends Component
      */
     public function getExportDriver()
     {
-        if (null !== $this->_exportDriver) {
+        if (null === $this->_exportDriver) {
+            $config = $this->exportDriver;
+            if (is_array($config) && !isset($config['class'])) {
+                $config['class'] = FlatCategoryDriver::class;
+            }
+
             /** @var DriverInterface $driver */
-            $driver = Instance::ensure($this->exportDriver, DriverInterface::class);
+            $driver = Instance::ensure($config, DriverInterface::class);
             $this->_exportDriver = $driver;
         }
         return $this->_exportDriver;
