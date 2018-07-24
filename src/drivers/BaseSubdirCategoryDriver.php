@@ -7,28 +7,27 @@ use yii\helpers\FileHelper;
 use yii\helpers\StringHelper;
 
 /**
- * Translations storage driver with categories as subdirectories.
+ * Base storage driver for translations with categories as subdirectories.
  *
  * Translation for message `\Yii::t('category/subcategory', 'Test message')`
- * for `ru-RU` language will be stored in `ru-RU/category/subcategory.json` file
- * and will contain:
+ * for `ru-RU` language will be stored in `ru-RU/category/subcategory.{extension}` file
+ * and will contain data equivalent to following array:
  *
- * ```json
- * {
- *     "Test message": "Тестовое сообщение"
- * }
+ * ```php
+ * [
+ *     "Test message" => "Тестовое сообщение",
+ * ]
  * ```
  */
-class SubdirCategoryDriver extends Component implements DriverInterface
+abstract class BaseSubdirCategoryDriver extends Component implements DriverInterface
 {
     use CategoryUtilsTrait;
-    use JsonDriverTrait;
 
     /** @var string Path to messages root for all languages */
     public $path;
 
     /** @var string File extension without dot like 'json' */
-    public $extension = 'json';
+    public $extension;
 
     /**
      * @inheritdoc
@@ -40,6 +39,9 @@ class SubdirCategoryDriver extends Component implements DriverInterface
 
         if (null === $this->path) {
             throw new InvalidConfigException('Option "path" is required');
+        }
+        if (null === $this->extension) {
+            throw new InvalidConfigException('Option "extension" is required');
         }
     }
 
@@ -118,28 +120,14 @@ class SubdirCategoryDriver extends Component implements DriverInterface
      * @return array
      * @throws SourceDataException
      */
-    private function loadTranslationsFromFile($file)
-    {
-        $data = $this->loadJsonFile($file);
-
-        foreach ($data as $message => $translation) {
-            if (!is_string($translation)) {
-                throw new SourceDataException("Translation for message `$message` is not a string");
-            }
-        }
-
-        return $data;
-    }
+    abstract protected function loadTranslationsFromFile($file);
 
     /**
      * @param string $file
      * @param array $messages
      */
-    private function saveTranslationsToFile($file, $messages)
-    {
-        $this->saveJsonFile($file, $messages);
+    abstract protected function saveTranslationsToFile($file, $messages);
 
-    }
 
     /**
      * Update existing translations
