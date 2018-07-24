@@ -2,7 +2,6 @@
 namespace VovanVE\Yii2I18nJsonExport\drivers;
 
 use yii\helpers\Json;
-use yii\helpers\StringHelper;
 
 trait JsonDriverTrait
 {
@@ -11,9 +10,6 @@ trait JsonDriverTrait
 
     /** @var bool */
     public $jsonEndNewLine = true;
-
-    /** @var string Category prefix to remove on export */
-    public $categoryPrefix = '';
 
     /**
      * @param $file
@@ -48,24 +44,5 @@ trait JsonDriverTrait
         if (false === file_put_contents($file, $json, LOCK_EX)) {
             throw new \RuntimeException('Cannot save file');
         }
-    }
-
-    /**
-     * @param string $category Source category
-     * @return string
-     * @throws SourceDataException
-     */
-    private function stripCategoryPrefix($category)
-    {
-        $prefix = $this->categoryPrefix;
-        if ('' === $prefix) {
-            return $category;
-        }
-
-        if (StringHelper::startsWith($category, $prefix)) {
-            return StringHelper::byteSubstr($category, StringHelper::byteLength($prefix));
-        }
-
-        throw new SourceDataException('Source category name does not start with the prefix');
     }
 }

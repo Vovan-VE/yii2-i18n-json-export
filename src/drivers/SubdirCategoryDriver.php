@@ -21,6 +21,7 @@ use yii\helpers\StringHelper;
  */
 class SubdirCategoryDriver extends Component implements DriverInterface
 {
+    use CategoryUtilsTrait;
     use JsonDriverTrait;
 
     /** @var string Path to messages root for all languages */
@@ -103,10 +104,10 @@ class SubdirCategoryDriver extends Component implements DriverInterface
                     $existing = $this->loadTranslationsFromFile($file);
                     $new = $this->updateTranslationsArray($existing, $messages);
                     if ($new !== $existing) {
-                        $this->saveJsonFile($file . $extraExtension, $new);
+                        $this->saveTranslationsToFile($file . $extraExtension, $new);
                     }
                 } else {
-                    $this->saveJsonFile($file . $extraExtension, $messages);
+                    $this->saveTranslationsToFile($file . $extraExtension, $messages);
                 }
             }
         }
@@ -128,6 +129,16 @@ class SubdirCategoryDriver extends Component implements DriverInterface
         }
 
         return $data;
+    }
+
+    /**
+     * @param string $file
+     * @param array $messages
+     */
+    private function saveTranslationsToFile($file, $messages)
+    {
+        $this->saveJsonFile($file, $messages);
+
     }
 
     /**

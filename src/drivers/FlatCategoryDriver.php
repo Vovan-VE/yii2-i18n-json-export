@@ -23,6 +23,7 @@ use yii\helpers\StringHelper;
  */
 class FlatCategoryDriver extends Component implements DriverInterface
 {
+    use CategoryUtilsTrait;
     use JsonDriverTrait;
 
     /** @var string Path to messages root for all languages */
