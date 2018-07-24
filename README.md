@@ -20,7 +20,6 @@ i18n.t('app/ui', 'Save')
 Solution
 --------
 
-1. Use JSON format for translation files for all parts of your project.
 1. Export (with merge) all translations from all source parts into single file per each language.
 1. Translate messages for specific language in a single JSON file.
 1. Import it back to update existing translations in source parts.
@@ -39,9 +38,6 @@ or add to `require` section in your composer.json:
 Usage
 -----
 
-Assume you use [vovan-ve/yii2-i18n-json-export][] to store translations in
-`lang/category/subcategory.json` files.
-
 Add app configuration like following:
 
 ```php
@@ -51,8 +47,7 @@ Add app configuration like following:
         // list of source drivers
         'sourceDrivers' => [
             [
-                // JSON translations by https://github.com/vovan-ve/yii2-i18n-json-export
-                'class' => \VovanVE\Yii2I18nJsonExport\drivers\SubdirCategoryDriver::class,
+                'class' => \VovanVE\Yii2I18nJsonExport\drivers\SubdirCategoryPhpDriver::class,
                 'path' => '@app/messages',
                 // strip category prefix
                 //'categoryPrefix' => 'app/',
@@ -69,6 +64,9 @@ Add app configuration like following:
 ```
 
 Use component for example from CLI controller:
+
+Also you can use [vovan-ve/yii2-i18n-json-export][] to store Yii2 translations in
+`lang/category/subcategory.json` JSON files.
 
 ```php
 // @app/commands/I18nDumpController.php:
@@ -112,10 +110,11 @@ You are ready:
 $ cd /project
 
 # assume you has already extracted messages under ./messages/
-$ cat ./messages/ru-RU/category/subcategory.json
-{
-    "Test message": ""
-}
+$ cat ./messages/ru-RU/category/subcategory.php
+<?php
+return [
+    "Test message" => "",
+];
 
 # export to outsource
 $ ./yii i18n-dump/export
@@ -141,10 +140,11 @@ $ ./yii i18n-dump/import
 
 # see new file
 # notice `.new` in the end which is covered by default 'overwrite' => true in Manager
-$ cat ./messages/ru-RU/category/subcategory.json.new
-{
-    "Test message": "Тестовое сообщение"
-}
+$ cat ./messages/ru-RU/category/subcategory.php.new
+<?php
+return [
+    "Test message" => "Тестовое сообщение"
+];
 ```
 
 License
