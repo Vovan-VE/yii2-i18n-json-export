@@ -1,0 +1,32 @@
+{
+  "name": "vovan-ve/yii2-i18n-json-export",
+  "type": "yii2-extension",
+  "description": "Export and import i18n JSON messages",
+  "keywords": [
+    "yii2",
+    "i18n",
+    "json",
+    "export",
+    "import"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Vovan-VE",
+      "email": "vovan-ve@yandex.ru"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/vovan-ve/yii2-i18n-json-export/issues",
+    "source": "https://github.com/vovan-ve/yii2-i18n-json-export"
+  },
+  "autoload": {
+    "psr-4": {
+      "VovanVE\\Yii2I18nJsonExport\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=7.0",
+    "yiisoft/yii2": "~2.0.15"
+  }
+}
