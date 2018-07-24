@@ -36,7 +36,11 @@ class SubdirCategoryDriver extends Component implements DriverInterface
     {
         $data = [];
 
-        $real_path = realpath(\Yii::getAlias($this->path));
+        $abs_path = \Yii::getAlias($this->path);
+        $real_path = realpath($abs_path);
+        if (false === $real_path) {
+            throw new \RuntimeException("Cannot check path: $abs_path");
+        }
 
         $base_path = strtr($real_path, '\\', '/');
         $base_path = rtrim($base_path, '/') . '/';
@@ -63,7 +67,11 @@ class SubdirCategoryDriver extends Component implements DriverInterface
      */
     public function saveAllTranslations($data, $onlyExisting = true, $extraExtension = '')
     {
-        $real_path = realpath(\Yii::getAlias($this->path));
+        $abs_path = \Yii::getAlias($this->path);
+        $real_path = realpath($abs_path);
+        if (false === $real_path) {
+            throw new \RuntimeException("Cannot check path: $abs_path");
+        }
 
         foreach ($data as $language => $categories) {
             foreach ($categories as $category => $messages) {
@@ -71,7 +79,7 @@ class SubdirCategoryDriver extends Component implements DriverInterface
                 $file = join('/', [
                     $real_path,
                     $language,
-                    strtr($prefixed_category, '\\', '/') . $this->extension,
+                    strtr($prefixed_category, '\\', '/') . '.' . $this->extension,
                 ]);
 
                 if ($onlyExisting) {

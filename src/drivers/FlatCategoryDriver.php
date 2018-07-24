@@ -37,7 +37,11 @@ class FlatCategoryDriver extends Component implements DriverInterface
     {
         $data = [];
 
-        $real_path = realpath(\Yii::getAlias($this->path));
+        $abs_path = \Yii::getAlias($this->path);
+        $real_path = realpath($abs_path);
+        if (false === $real_path) {
+            throw new \RuntimeException("Cannot check path: $abs_path");
+        }
 
         $base_path = strtr($real_path, '\\', '/');
         $base_path = rtrim($base_path, '/') . '/';
@@ -64,10 +68,14 @@ class FlatCategoryDriver extends Component implements DriverInterface
      */
     public function saveAllTranslations($data, $onlyExisting = true, $extraExtension = '')
     {
-        $real_path = realpath(\Yii::getAlias($this->path));
+        $abs_path = \Yii::getAlias($this->path);
+        $real_path = realpath($abs_path);
+        if (false === $real_path) {
+            throw new \RuntimeException("Cannot check path: $abs_path");
+        }
 
         foreach ($data as $language => $categories) {
-            $file = $real_path . '/' . $language . $this->extension;
+            $file = $real_path . '/' . $language . '.' . $this->extension;
 
             if ($onlyExisting) {
                 if (!is_file($file)) {
