@@ -10,6 +10,7 @@ use yii\di\Instance;
 
 class Manager extends Component
 {
+    /** @var bool Whether to overwrite source files on import */
     public $overwrite = false;
 
     /**
@@ -44,6 +45,7 @@ class Manager extends Component
     }
 
     /**
+     * Read all translations from all source drivers and save then with export driver
      * @throws InvalidConfigException
      * @throws SourceDataException
      * @throws ExportException
@@ -60,6 +62,7 @@ class Manager extends Component
     }
 
     /**
+     * Read translations from export driver and update existing messages in files under source drivers
      * @throws InvalidConfigException
      * @throws SourceDataException
      */

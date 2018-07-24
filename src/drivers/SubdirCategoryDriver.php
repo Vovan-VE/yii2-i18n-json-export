@@ -6,6 +6,19 @@ use yii\base\InvalidConfigException;
 use yii\helpers\FileHelper;
 use yii\helpers\StringHelper;
 
+/**
+ * Translations storage driver with categories as subdirectories.
+ *
+ * Translation for message `\Yii::t('category/subcategory', 'Test message')`
+ * for `ru-RU` language will be stored in `ru-RU/category/subcategory.json` file
+ * and will contain:
+ *
+ * ```json
+ * {
+ *     "Test message": "Тестовое сообщение"
+ * }
+ * ```
+ */
 class SubdirCategoryDriver extends Component implements DriverInterface
 {
     use JsonDriverTrait;
