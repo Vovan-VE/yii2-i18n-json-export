@@ -93,18 +93,18 @@ class FlatCategoryDriver extends Component implements DriverInterface
         foreach ($data as $language => $categories) {
             $file = $real_path . '/' . $language . '.' . $this->extension;
 
-            if ($onlyExisting) {
-                if (!is_file($file)) {
-                    continue;
-                }
-
-                $existing = $this->loadLanguageFromFile($file);
-                $new = $this->updateTranslationsArray($existing, $categories);
-                if ($new !== $existing) {
+            if (is_file($file)) {
+                $old = $this->loadLanguageFromFile($file);
+                $new = $onlyExisting
+                    ? $this->updateTranslationsArray($old, $categories)
+                    : $this->fillTranslationsArray($categories, $old);
+                if ($new !== $old) {
                     $this->saveLanguageToFile($file . $extraExtension, $new);
                 }
             } else {
-                $this->saveLanguageToFile($file . $extraExtension, $categories);
+                if (!$onlyExisting) {
+                    $this->saveLanguageToFile($file . $extraExtension, $categories);
+                }
             }
         }
     }
@@ -165,6 +165,34 @@ class FlatCategoryDriver extends Component implements DriverInterface
                 foreach ($messages as $message => $translation) {
                     if (isset($new_category[$message]) && '' !== $new_category[$message]) {
                         $result[$category][$message] = $new_category[$message];
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fill new empty translations by old non-empty
+     * @param array $new New translations to fill
+     * @param array $old Old translations as fallback
+     * @return array
+     */
+    private function fillTranslationsArray($new, $old)
+    {
+        // first try to "copy" source array to optimize in case of no changes
+        $result = $new;
+
+        foreach ($new as $category => $messages) {
+            if (isset($old[$category])) {
+                $old_category = $old[$category];
+                foreach ($messages as $message => $translation) {
+                    if ('' === $translation && isset($old_category[$message])) {
+                        $old_translation = $old_category[$message];
+                        if ('' !== $old_translation) {
+                            $result[$category][$message] = $old_translation;
+                        }
                     }
                 }
             }
