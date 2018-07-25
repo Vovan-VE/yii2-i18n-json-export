@@ -1,6 +1,8 @@
 <?php
 namespace VovanVE\Yii2I18nJsonExport\drivers;
 
+use VovanVE\Yii2I18nJsonExport\SourceDataException;
+
 interface DriverInterface
 {
     /**

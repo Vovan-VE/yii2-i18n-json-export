@@ -3,7 +3,6 @@ namespace VovanVE\Yii2I18nJsonExport;
 
 use VovanVE\Yii2I18nJsonExport\drivers\DriverInterface;
 use VovanVE\Yii2I18nJsonExport\drivers\FlatCategoryDriver;
-use VovanVE\Yii2I18nJsonExport\drivers\SourceDataException;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\di\Instance;
