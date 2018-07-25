@@ -2,7 +2,7 @@ Yii2 I18N JSON Export
 =====================
 
 Imagine your project has multiple parts with its own separate I18N translations.
-That parts may be for example backend, server side of frontend and client side of frontend.
+That parts may be for example backend, server side of frontend, and client side of frontend.
 
 Of cause, some parts may share some messages, and you sure to provide the same translations
 for such shared messages:
@@ -20,7 +20,7 @@ i18n.t('app/ui', 'Save')
 Solution
 --------
 
-1. Export (with merge) all translations from all source parts into single file per each language.
+1. Export all translations from all source parts into single merged file per each language.
 1. Translate messages for specific language in a single JSON file.
 1. Import it back to update existing translations in source parts.
 
@@ -43,7 +43,7 @@ Add app configuration like following:
 ```php
 'components' => [
     'i18nJsonExport' => [
-        'class' => \VovanVE\Yii2I18nJsonExport\components\Manager::class,
+        'class' => \VovanVE\Yii2I18nJsonExport\Manager::class,
         // list of source drivers
         'sourceDrivers' => [
             [
@@ -65,15 +65,12 @@ Add app configuration like following:
 
 Use component for example from CLI controller:
 
-Also you can use [vovan-ve/yii2-i18n-json-export][] to store Yii2 translations in
-`lang/category/subcategory.json` JSON files.
-
 ```php
 // @app/commands/I18nDumpController.php:
 <?php
 namespace app\commands;
 
-use VovanVE\Yii2I18nJsonExport\components\Manager;
+use VovanVE\Yii2I18nJsonExport\Manager;
 use yii\console\Controller;
 use yii\di\Instance;
 
@@ -113,7 +110,7 @@ $ cd /project
 $ cat ./messages/ru-RU/category/subcategory.php
 <?php
 return [
-    "Test message" => "",
+    'Test message' => '',
 ];
 
 # export to outsource
@@ -127,7 +124,7 @@ $ cat ./i18n/ru-RU.json
     }
 }
 
-# translate it like so
+# translate it somehow like so
 $ cat ./i18n/ru-RU.json
 {
     "category/subcategory": {
@@ -143,7 +140,7 @@ $ ./yii i18n-dump/import
 $ cat ./messages/ru-RU/category/subcategory.php.new
 <?php
 return [
-    "Test message" => "Тестовое сообщение"
+    'Test message' => 'Тестовое сообщение',
 ];
 ```
 
@@ -155,4 +152,3 @@ This package is under [MIT License][mit]
 
 [composer]: http://getcomposer.org/
 [mit]: https://opensource.org/licenses/MIT
-[vovan-ve/yii2-i18n-json-export]: https://github.com/vovan-ve/yii2-i18n-json-export

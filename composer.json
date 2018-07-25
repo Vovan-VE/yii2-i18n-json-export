@@ -7,7 +7,8 @@
     "i18n",
     "json",
     "export",
-    "import"
+    "import",
+    "merge"
   ],
   "license": "MIT",
   "authors": [

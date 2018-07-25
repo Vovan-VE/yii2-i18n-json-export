@@ -1,5 +1,5 @@
 <?php
-namespace VovanVE\Yii2I18nJsonExport\components;
+namespace VovanVE\Yii2I18nJsonExport;
 
 use VovanVE\Yii2I18nJsonExport\drivers\DriverInterface;
 use VovanVE\Yii2I18nJsonExport\drivers\FlatCategoryDriver;
@@ -10,7 +10,9 @@ use yii\di\Instance;
 
 class Manager extends Component
 {
-    /** @var bool Whether to overwrite source files on import */
+    /**
+     * @var bool Whether to overwrite source files on import
+     */
     public $overwrite = false;
 
     /**
@@ -18,7 +20,9 @@ class Manager extends Component
      */
     public $sourceDrivers = [];
 
-    /** @var array|DriverInterface Config for exporting driver */
+    /**
+     * @var array|DriverInterface Config for exporting driver
+     */
     public $exportDriver = [];
 
     /**
@@ -48,7 +52,7 @@ class Manager extends Component
      * Read all translations from all source drivers and save then with export driver
      * @throws InvalidConfigException
      * @throws SourceDataException
-     * @throws ExportException
+     * @throws MergeConflictException
      */
     public function export()
     {
