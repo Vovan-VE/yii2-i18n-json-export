@@ -49,7 +49,6 @@ class FlatDirectoryDriver extends BaseFlatCategoryDriver
 
         $files = FileHelper::findFiles($real_path, [
             'only' => ["/*/*.{$this->extension}"],
-            'recursive' => false,
         ]);
         foreach ($files as $file) {
             $language = self::parsePathLanguage($file, $base_path, $this->extension);
