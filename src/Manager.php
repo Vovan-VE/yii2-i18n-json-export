@@ -144,7 +144,7 @@ class Manager extends Component
                 throw new MergeConflictException(
                     $language,
                     $e->category,
-                    $e->message,
+                    $e->sourceMessage,
                     $e->translations
                 );
             }

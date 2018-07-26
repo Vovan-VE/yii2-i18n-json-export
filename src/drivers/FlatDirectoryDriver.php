@@ -71,7 +71,7 @@ class FlatDirectoryDriver extends BaseFlatCategoryDriver
                 throw new MergeConflictException(
                     $language,
                     $e->category,
-                    $e->message,
+                    $e->sourceMessage,
                     $e->translations
                 );
             }
