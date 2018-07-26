@@ -8,7 +8,7 @@ class MergeConflictException extends ExportException
     /** @var string */
     public $category;
     /** @var string */
-    public $message;
+    public $sourceMessage;
     /** @var string[] */
     public $translations;
 
@@ -16,22 +16,22 @@ class MergeConflictException extends ExportException
      * MergeConflictException constructor.
      * @param string $language
      * @param string $category
-     * @param string $message
+     * @param string $sourceMessage
      * @param string[] $translations
      * @param \Throwable|null $previous
      */
     public function __construct(
         $language,
         $category,
-        $message,
+        $sourceMessage,
         array $translations,
         \Throwable $previous = null
     ) {
         $this->language = $language;
         $this->category = $category;
-        $this->message = $message;
+        $this->sourceMessage = $sourceMessage;
         $this->translations = $translations;
 
-        parent::__construct("Conflicting translations in `$language` language for (`$category`, `$message`)", 0, $previous);
+        parent::__construct("Conflicting translations in `$language` language for (`$category`, `$sourceMessage`)", 0, $previous);
     }
 }

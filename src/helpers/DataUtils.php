@@ -62,7 +62,7 @@ class DataUtils
 
             foreach ($addMessages as $message => $add_translation) {
                 if (isset($res_category[$message]) && '' !== $res_category[$message]) {
-                    if ($add_translation !== $res_category[$message]) {
+                    if ($add_translation !== $res_category[$message] && '' !== $add_translation) {
                         throw new MergeConflictException('?', $category, $message, [
                             $res_category[$message],
                             $add_translation,
