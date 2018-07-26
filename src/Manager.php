@@ -3,6 +3,7 @@ namespace VovanVE\Yii2I18nJsonExport;
 
 use VovanVE\Yii2I18nJsonExport\drivers\DriverInterface;
 use VovanVE\Yii2I18nJsonExport\drivers\FlatCategoryDriver;
+use VovanVE\Yii2I18nJsonExport\helpers\DataUtils;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\di\Instance;
@@ -58,7 +59,7 @@ class Manager extends Component
         $data = [];
 
         foreach ($this->getSourceDrivers() as $driver) {
-            $data = $this->mergeExportTranslations($data, $driver->loadAllTranslations());
+            $data = self::mergeExportTranslations($data, $driver->loadAllTranslations());
         }
 
         $this->getExportDriver()->saveAllTranslations($data, false);
@@ -122,7 +123,7 @@ class Manager extends Component
      * @return array
      * @throws MergeConflictException
      */
-    private function mergeExportTranslations($data, $translations)
+    private static function mergeExportTranslations($data, $translations)
     {
         if (!$data) {
             return $translations;
@@ -137,27 +138,15 @@ class Manager extends Component
             }
 
             $res_lang = &$result[$language];
-
-            foreach ($categories as $category => $messages) {
-                if (!isset($res_lang[$category])) {
-                    $res_lang[$category] = $messages;
-                    continue;
-                }
-
-                $res_category = &$res_lang[$category];
-
-                foreach ($messages as $message => $new_translation) {
-                    if (isset($res_category[$message]) && '' !== $res_category[$message]) {
-                        if ($new_translation !== $res_category[$message]) {
-                            throw new MergeConflictException($language, $category, $message, [
-                                $res_category[$message],
-                                $new_translation,
-                            ]);
-                        }
-                    } else {
-                        $res_category[$message] = $new_translation;
-                    }
-                }
+            try {
+                DataUtils::mergeSourceLanguage($res_lang, $categories);
+            } catch (MergeConflictException $e) {
+                throw new MergeConflictException(
+                    $language,
+                    $e->category,
+                    $e->message,
+                    $e->translations
+                );
             }
         }
 

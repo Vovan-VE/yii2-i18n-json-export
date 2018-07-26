@@ -1,6 +1,8 @@
 <?php
 namespace VovanVE\Yii2I18nJsonExport\helpers;
 
+use VovanVE\Yii2I18nJsonExport\MergeConflictException;
+
 class DataUtils
 {
     /**
@@ -41,5 +43,35 @@ class DataUtils
         );
 
         return $result;
+    }
+
+    /**
+     * @param array $targetLanguage
+     * @param array $addCategories
+     * @throws MergeConflictException
+     */
+    public static function mergeSourceLanguage(array &$targetLanguage, array $addCategories)
+    {
+        foreach ($addCategories as $category => $addMessages) {
+            if (!isset($targetLanguage[$category])) {
+                $targetLanguage[$category] = $addMessages;
+                continue;
+            }
+
+            $res_category = &$targetLanguage[$category];
+
+            foreach ($addMessages as $message => $add_translation) {
+                if (isset($res_category[$message]) && '' !== $res_category[$message]) {
+                    if ($add_translation !== $res_category[$message]) {
+                        throw new MergeConflictException('?', $category, $message, [
+                            $res_category[$message],
+                            $add_translation,
+                        ]);
+                    }
+                } else {
+                    $res_category[$message] = $add_translation;
+                }
+            }
+        }
     }
 }
