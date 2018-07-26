@@ -1,6 +1,9 @@
 Yii2 I18N JSON Export
 =====================
 
+[![Latest Stable Version](https://poser.pugx.org/vovan-ve/yii2-i18n-json-export/v/stable)](https://packagist.org/packages/vovan-ve/yii2-i18n-json-export)
+[![License](https://poser.pugx.org/vovan-ve/yii2-i18n-json-export/license)](https://packagist.org/packages/vovan-ve/yii2-i18n-json-export)
+
 Imagine your project has multiple parts with its own separate I18N translations.
 That parts may be for example backend, server side of frontend, and client side of frontend.
 
