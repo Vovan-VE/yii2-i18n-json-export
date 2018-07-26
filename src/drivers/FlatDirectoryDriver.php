@@ -1,15 +1,17 @@
 <?php
 namespace VovanVE\Yii2I18nJsonExport\drivers;
 
+use VovanVE\Yii2I18nJsonExport\helpers\DataUtils;
+use VovanVE\Yii2I18nJsonExport\MergeConflictException;
 use VovanVE\Yii2I18nJsonExport\SourceDataException;
 use yii\helpers\FileHelper;
 use yii\helpers\StringHelper;
 
 /**
- * Translations storage driver with single file per language.
+ * Translations storage driver with files in language directory.
  *
  * Translation for message `\Yii::t('category/subcategory', 'Test message')`
- * for `ru-RU` language will be stored in `ru-RU.json` file
+ * for `ru-RU` language will be stored in `ru-RU/*.json` file
  * and will contain:
  *
  * ```json
@@ -19,12 +21,18 @@ use yii\helpers\StringHelper;
  *     }
  * }
  * ```
+ *
+ * Exact file name depends on its nature. Files in same directory can safely share
+ * some messages.
+ *
+ * On export all files will be read and merged. On import each file will be updated separately.
  */
-class FlatCategoryDriver extends BaseFlatCategoryDriver
+class FlatDirectoryDriver extends BaseFlatCategoryDriver
 {
     /**
      * @inheritdoc
      * @throws SourceDataException
+     * @throws MergeConflictException
      */
     public function loadAllTranslations()
     {
@@ -40,7 +48,7 @@ class FlatCategoryDriver extends BaseFlatCategoryDriver
         $base_path = rtrim($base_path, '/') . '/';
 
         $files = FileHelper::findFiles($real_path, [
-            'only' => ["*.{$this->extension}"],
+            'only' => ["/*/*.{$this->extension}"],
             'recursive' => false,
         ]);
         foreach ($files as $file) {
@@ -49,7 +57,24 @@ class FlatCategoryDriver extends BaseFlatCategoryDriver
                 continue;
             }
 
-            $data[$language] = $this->loadLanguageFromFile($file);
+            $messages = $this->loadLanguageFromFile($file);
+
+            if (!isset($data[$language])) {
+                $data[$language] = $messages;
+                continue;
+            }
+
+            $res_language = &$data[$language];
+            try {
+                DataUtils::mergeSourceLanguage($res_language, $messages);
+            } catch (MergeConflictException $e) {
+                throw new MergeConflictException(
+                    $language,
+                    $e->category,
+                    $e->message,
+                    $e->translations
+                );
+            }
         }
 
         return $data;
@@ -68,19 +93,18 @@ class FlatCategoryDriver extends BaseFlatCategoryDriver
         }
 
         foreach ($data as $language => $categories) {
-            $file = $real_path . '/' . $language . '.' . $this->extension;
-
-            if (is_file($file)) {
+            $language_path = $real_path . '/' . $language;
+            $files = FileHelper::findFiles($language_path, [
+                'only' => ["*.{$this->extension}"],
+                'recursive' => false,
+            ]);
+            foreach ($files as $file) {
                 $old = $this->loadLanguageFromFile($file);
                 $new = $onlyExisting
                     ? $this->updateTranslationsArray($old, $categories)
                     : $this->fillTranslationsArray($categories, $old);
                 if ($new !== $old) {
                     $this->saveLanguageToFile($file . $extraExtension, $new);
-                }
-            } else {
-                if (!$onlyExisting) {
-                    $this->saveLanguageToFile($file . $extraExtension, $categories);
                 }
             }
         }
@@ -95,8 +119,6 @@ class FlatCategoryDriver extends BaseFlatCategoryDriver
      */
     private static function parsePathLanguage($file, $basePath, $extension)
     {
-        // yes, you know, `basename()` sucks
-
         $path = strtr($file, '\\', '/');
         $dot_ext = '.' . $extension;
 
@@ -104,32 +126,30 @@ class FlatCategoryDriver extends BaseFlatCategoryDriver
             throw new \InvalidArgumentException('File outside of base path');
         }
 
-        // /foo/bar/file.json
+        // /foo/bar/baz/file.json
         // /foo/bar/
         // =>
-        //          file.json
-        $basename = StringHelper::byteSubstr($path, StringHelper::byteLength($basePath));
+        //          bar/file.json
+        $sub_path = StringHelper::byteSubstr($path, StringHelper::byteLength($basePath));
 
-        if (false !== strpos($basename, '/')) {
-            throw new \InvalidArgumentException('File from nested subdirectories');
-        }
-
-        // file.json
-        //     -----
-        if (StringHelper::endsWith($basename, $dot_ext)) {
-            // file.json
-            //     ----- DEL
+        // bar/file.json
+        //         -----
+        if (StringHelper::endsWith($sub_path, $dot_ext)) {
+            // bar/file.json
+            //         ----- DEL
             // =>
-            // file
-            $basename = StringHelper::byteSubstr($basename, 0, -StringHelper::byteLength($dot_ext));
+            // bar/file
+            $sub_path = StringHelper::byteSubstr($sub_path, 0, -StringHelper::byteLength($dot_ext));
 
             // Edge cases:
-            // '.json' => ''
-            if ('' === $basename) {
+            // bar/.json => bar/
+            // .json     => ''
+            if ('' === $sub_path || StringHelper::endsWith($sub_path, '/')) {
                 return null;
             }
         }
 
-        return $basename;
+        // "ru-RU/foo" => "ru-RU"
+        return explode('/', $sub_path)[0];
     }
 }
