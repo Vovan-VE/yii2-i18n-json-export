@@ -33,10 +33,10 @@ class DataUtils
             $result,
             $emptiesOnTop
                 ? function ($a, $b) use ($translations) {
-                $x = '' === $translations[$a];
-                $y = '' === $translations[$b];
-                return $x - $y ?: strcasecmp($a, $b);
-            }
+                    $a_empty = '' === $translations[$a];
+                    $b_empty = '' === $translations[$b];
+                    return $b_empty - $a_empty ?: strcasecmp($a, $b);
+                }
                 : 'strcasecmp'
         );
 
