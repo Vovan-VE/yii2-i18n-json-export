@@ -56,6 +56,8 @@ Add app configuration like following:
         'exportDriver' => [
             'class' => \VovanVE\Yii2I18nJsonExport\drivers\FlatCategoryDriver::class,
             'path' => '@app/i18n',
+            // turn on to bubble empty translations to top
+            //'sortEmptyFirst' => true,
         ],
         // whether to import back in same files
         //'overwrite' => true,
@@ -136,7 +138,7 @@ $ cat ./i18n/ru-RU.json
 $ ./yii i18n-dump/import
 
 # see new file
-# notice `.new` in the end which is covered by default 'overwrite' => true in Manager
+# notice `.new` in the end which is covered by default 'overwrite' => false in Manager
 $ cat ./messages/ru-RU/category/subcategory.php.new
 <?php
 return [
