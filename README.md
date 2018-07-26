@@ -56,6 +56,8 @@ Add app configuration like following:
         'exportDriver' => [
             'class' => \VovanVE\Yii2I18nJsonExport\drivers\FlatCategoryDriver::class,
             'path' => '@app/i18n',
+            // turn on to bubble empty translations to top
+            //'sortEmptyFirst' => true,
         ],
         // whether to import back in same files
         //'overwrite' => true,

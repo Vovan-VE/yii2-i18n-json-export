@@ -1,6 +1,7 @@
 <?php
 namespace VovanVE\Yii2I18nJsonExport\drivers;
 
+use VovanVE\Yii2I18nJsonExport\helpers\DataUtils;
 use VovanVE\Yii2I18nJsonExport\SourceDataException;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
@@ -32,6 +33,9 @@ class FlatCategoryDriver extends Component implements DriverInterface
 
     /** @var string File extension without dot like 'json' */
     public $extension = 'json';
+
+    /** @var bool Whether to bubble empty translations to top on save */
+    public $sortEmptyFirst = false;
 
     /**
      * @inheritdoc
@@ -143,8 +147,13 @@ class FlatCategoryDriver extends Component implements DriverInterface
     private function saveLanguageToFile($file, $data)
     {
         $out = [];
-        foreach ($data as $category => $messages) {
-            $out[$this->categoryPrefix . $category] = $messages;
+        $data_sorted = $data;
+        ksort($data_sorted);
+        foreach ($data_sorted as $category => $messages) {
+            $out[$this->categoryPrefix . $category] = DataUtils::sortTranslationsMap(
+                $messages,
+                $this->sortEmptyFirst
+            );
         }
         $this->saveJsonFile($file, $out);
     }

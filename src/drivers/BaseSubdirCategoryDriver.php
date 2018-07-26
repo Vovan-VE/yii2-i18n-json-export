@@ -1,6 +1,7 @@
 <?php
 namespace VovanVE\Yii2I18nJsonExport\drivers;
 
+use VovanVE\Yii2I18nJsonExport\helpers\DataUtils;
 use VovanVE\Yii2I18nJsonExport\SourceDataException;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
@@ -29,6 +30,9 @@ abstract class BaseSubdirCategoryDriver extends Component implements DriverInter
 
     /** @var string File extension without dot like 'json' */
     public $extension;
+
+    /** @var bool Whether to bubble empty translations to top on save */
+    public $sortEmptyFirst = false;
 
     /**
      * @inheritdoc
@@ -107,13 +111,25 @@ abstract class BaseSubdirCategoryDriver extends Component implements DriverInter
                     $existing = $this->loadTranslationsFromFile($file);
                     $new = $this->updateTranslationsArray($existing, $messages);
                     if ($new !== $existing) {
-                        $this->saveTranslationsToFile($file . $extraExtension, $new);
+                        $this->saveTranslations($file . $extraExtension, $new);
                     }
                 } else {
-                    $this->saveTranslationsToFile($file . $extraExtension, $messages);
+                    $this->saveTranslations($file . $extraExtension, $messages);
                 }
             }
         }
+    }
+
+    /**
+     * @param string $file
+     * @param array $messages
+     */
+    private function saveTranslations($file, $messages)
+    {
+        $this->saveTranslationsToFile(
+            $file,
+            DataUtils::sortTranslationsMap($messages, $this->sortEmptyFirst)
+        );
     }
 
     /**
